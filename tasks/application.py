@@ -4,12 +4,13 @@ from flask_session import Session
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-
-todos = []
+Session(app)
 
 @app.route("/")
 def tasks():
-    return render_template("tasks.html", todos=todos)
+    if "todos" not in session:
+        session["todos"] = []
+    return render_template("tasks.html", todos=session["todos"])
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
@@ -17,5 +18,6 @@ def add():
         return render_template("add.html")
     else:
         todo = request.form.get("task")
-        todos.append(todo)
+        print(todo)
+        session["todos"].append(todo)
         return redirect("/")
